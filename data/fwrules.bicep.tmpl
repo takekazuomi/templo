@@ -1,12 +1,12 @@
 param mysql object // external resouces
 
-{{ range $i, $v := .env }}
 // https://docs.microsoft.com/ja-jp/azure/templates/microsoft.dbformysql/2017-12-01/servers/firewallrules
+{{ range $i, $v := .env }}
 resource fw{{ $i }}_resource 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = {
-  name: '${mysql.name}/{{ $v.name}}'
+  name: '${mysql.name}/{{ $v.name }}'
   properties: {
     startIpAddress: '{{ $v.startIpAddress }}'
     endIpAddress: '{{ $v.endIpAddress }}'
   }
 }
-{{ end -}}
+{{ end }}
