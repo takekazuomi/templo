@@ -52,13 +52,29 @@ func templateEvaulate(wr io.Writer, name string, data []map[string]string) {
 }
 
 func main() {
-	(&cli.App{
+	app := (&cli.App{
 		Name:  "templo",
 		Usage: "Expand the template",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "template",
+				Aliases:  []string{"t"},
+				Usage:    "Load template from `FILE`",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "csv",
+				Aliases:  []string{"c"},
+				Usage:    "Load csv data from `FILE`",
+				Required: true,
+			},
+		},
 		Action: func(c *cli.Context) error {
-			r := importCsv("data/sample.csv")
-			templateEvaulate(os.Stdout, "data/loop-sample.tmpl", r)
+			r := importCsv(c.String("csv"))
+			templateEvaulate(os.Stdout, c.String("template"), r)
 			return nil
 		},
-	}).Run(os.Args)
+	})
+
+	app.Run(os.Args)
 }
