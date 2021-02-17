@@ -437,3 +437,4 @@ tmp/
 
 *.code-workspace
 templo
+build/

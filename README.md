@@ -26,3 +26,9 @@ resource fw1_resource 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = 
 }
 ```
 
+## TODO
+
+Hard to live with `build/*` is root permission.
+
+
+
