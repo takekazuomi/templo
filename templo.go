@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -11,6 +12,8 @@ import (
 )
 
 func importCsv(name string) []map[string]string {
+	fmt.Println(name)
+
 	file, err := os.Open(name)
 	if err != nil {
 		log.Fatal(err)
@@ -28,6 +31,9 @@ func importCsv(name string) []map[string]string {
 	for {
 		records, err := r.Read()
 		if err != nil {
+			if err != io.EOF {
+				log.Fatalln(err, records)
+			}
 			break
 		}
 		if header == nil {

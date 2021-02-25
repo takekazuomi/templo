@@ -1,8 +1,7 @@
 # go template with csv
 
-
 ```shell
-./templo -t data/fwrules.bicep.tmpl -c data/fwrules.csv
+templo -t data/fwrules.bicep.tmpl -c data/fwrules.csv
 
 param mysql object // external resouces
 
@@ -26,9 +25,15 @@ resource fw1_resource 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = 
 }
 ```
 
+Run in docker
+
+```shell
+docker run --rm -i takekazuomi/templo -t data/fwrules.bicep.tmpl -c data/fwrules.csv
+```
+
 ## TODO
 
-Hard to live with `build/*` is root permission.
+`build/*` is root permission, it's hard to live.
 
 
 
