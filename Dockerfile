@@ -3,6 +3,7 @@ WORKDIR /tmp
 RUN go get -v github.com/takekazuomi/templo
 
 FROM alpine:latest
-WORKDIR /root/
-COPY --from=builder /go/bin/templo .
-CMD ["./templo"]
+WORKDIR /app/
+COPY --from=builder /go/bin/templo /go/bin/templo
+
+ENTRYPOINT ["/go/bin/templo"]
