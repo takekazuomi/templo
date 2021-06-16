@@ -1,5 +1,5 @@
 IMAGE_NAME	?= takekazuomi/templo
-TAG		?= 0.0.1
+TAG		?= 0.0.2
 SRC		:= templo.go
 GOLANG_CROSS	:= dockercore/golang-cross:1.13.15
 

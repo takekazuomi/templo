@@ -54,8 +54,11 @@ func TestTemplateEvaulateFwRuleSuccess(t *testing.T) {
 	file.WriteString(s)
 	file.Close()
 
-	if !strings.Contains(s, "0: f1 1, f2: apple, f3: orange, f4: 14") {
-		t.Errorf("erro unexpeded result %v", s)
+	if !(strings.Contains(s, "/apple") &&
+		strings.Contains(s, "/orange") &&
+		strings.Contains(s, "192.168.12.2/32")) {
+
+		t.Errorf("error unexpeded result %v", s)
 	}
 
 }
