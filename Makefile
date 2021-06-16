@@ -21,7 +21,7 @@ version:
 	docker run -it --rm -v $(PWD):/src -w /src -e GOARCH=amd64 -e GOOS=windows $(GOLANG_CROSS) go version
 
 build:	## build
-	docker build \
+	docker build --no-cache --force-rm	\
 		-t $(IMAGE_NAME):$(TAG) \
 		-t $(IMAGE_NAME):latest \
 		-f Dockerfile .
