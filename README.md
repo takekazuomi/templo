@@ -28,7 +28,7 @@ resource fw1_resource 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = 
 Run in docker
 
 ```shell
-docker run --rm -i takekazuomi/templo -t data/fwrules.bicep.tmpl -c data/fwrules.csv
+$ docker run --rm -i -v ${PWD}:/app takekazuomi/templo -t data/fwrules.bicep.tmpl -c data/fwrules.csv
 ```
 
 ## 0.1.0 new custom function
@@ -47,7 +47,7 @@ array syntax.
 
 [go template Functions](https://pkg.go.dev/text/template#hdr-Functions)
 
-### sample
+### barray sample
 
 A template is the go template syntax. The example below uses the pipeline syntax.
 
@@ -71,5 +71,10 @@ bicep array with quote: ['1', '2']
 bicep array with sep: [AB, CD]
 ```
 
+## ChangeLog
+
+- 0.1.1
+  - fix pipeline args bug
+  - make more small container image
 
 

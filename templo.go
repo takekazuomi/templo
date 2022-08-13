@@ -50,37 +50,65 @@ func importCsv(name string) []map[string]string {
 	return results
 }
 
-func reflectSplit(item reflect.Value, sep string) ([]string, error) {
-	var sa []string
-	switch item.Kind() {
+// swapSplit properly swaps and splits arg1 and arg2
+// When called from pipeline, sep comes in arg1. When called by function, sep is entered in arg2.
+func swapSplit(arg1 reflect.Value, arg2 reflect.Value) (item []string, err error) {
+	var s, sep = "", " "
+
+	// check arg1
+	switch arg1.Kind() {
 	case reflect.Slice:
-		sa = reflect.Value.Interface(item).([]string)
+		item = reflect.Value.Interface(arg1).([]string)
 	case reflect.String:
-		sa = strings.Split(item.String(), sep)
+		s = arg1.String()
+	case reflect.Int:
+		sep = string(rune(int64(reflect.Value.Interface(arg1).(int))))
 	default:
-		return nil, fmt.Errorf("cannot split none string type %s", item.Type())
+		return nil, fmt.Errorf("cannot split none string type %s", arg1.Type())
 	}
-	return sa, nil
+
+	// check arg2
+	switch arg2.Kind() {
+	case reflect.Slice:
+		item = reflect.Value.Interface(arg2).([]string)
+	case reflect.String:
+		if len(s) > 0 || len(item) > 0 {
+			sep = arg2.String()
+		} else {
+			s = arg2.String()
+		}
+	case reflect.Int:
+		sep = string(rune(int64(reflect.Value.Interface(arg2).(int))))
+	case reflect.Invalid:
+	default:
+		return nil, fmt.Errorf("cannot split none string type %s", arg2.Type())
+	}
+
+	if len(s) > 0 {
+		item = strings.Split(s, sep)
+	}
+	return
 }
 
-func barray(item reflect.Value, args ...string) (string, error) {
-	sep := " "
+func barray(item reflect.Value, args ...reflect.Value) (string, error) {
+	var arg2 reflect.Value
 	if len(args) > 0 {
-		sep = args[0]
+		arg2 = args[0]
 	}
-	sa, err := reflectSplit(item, sep)
+	sa, err := swapSplit(item, arg2)
 	if err != nil {
 		return "", err
 	}
+
 	return "[" + strings.Join(sa, ", ") + "]", nil
 }
 
-func barrayq(item reflect.Value, args ...string) (string, error) {
-	sep := " "
+func barrayq(item reflect.Value, args ...reflect.Value) (string, error) {
+	var arg2 reflect.Value
 	if len(args) > 0 {
-		sep = args[0]
+		arg2 = args[0]
 	}
-	sa, err := reflectSplit(item, sep)
+	sa, err := swapSplit(item, arg2)
 	if err != nil {
 		return "", err
 	}
@@ -92,12 +120,12 @@ func barrayq(item reflect.Value, args ...string) (string, error) {
 	return "[" + strings.Join(sa, ", ") + "]", nil
 }
 
-func split(s string, options ...string) ([]string, error) {
-	sep := " "
-	if len(options) > 0 {
-		sep = options[0]
+func split(item reflect.Value, args ...reflect.Value) ([]string, error) {
+	var arg2 reflect.Value
+	if len(args) > 0 {
+		arg2 = args[0]
 	}
-	return strings.Split(s, sep), nil
+	return swapSplit(item, arg2)
 }
 
 func templateEvaluate(wr io.Writer, name string, data []map[string]string) {

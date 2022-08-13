@@ -1,0 +1,5 @@
+{{- range $i, $v := .env }}
+{{- .f1 | split '|' }}
+{{ .f1 | split '|' | barrayq }}
+{{- end }}
+

@@ -1,5 +1,5 @@
 IMAGE_NAME	?= takekazuomi/templo
-TAG		?= 0.1.0
+TAG		?= 0.1.1
 SRC		:= templo.go
 GOLANG_CROSS	:= dockercore/golang-cross:1.13.15
 
@@ -45,3 +45,5 @@ test:	## test
 fmt:	## format
 	go fmt ./...
 
+release: lint
+	gh release create v$(TAG) --generate-notes
