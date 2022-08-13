@@ -52,14 +52,12 @@ func TestTemplateSplit(t *testing.T) {
 		want  []string
 	}{
 		{
-			name:  "split",
-			templ: "data/split.tmpl",
-			csv:   "data/split.csv",
-			out:   "data/split.out",
+			name:  "split-pipe",
+			templ: "data/split-pipe.tmpl",
+			csv:   "data/split-pipe.csv",
+			out:   "data/split-pipe.out",
 			want: []string{
-				"[1 2] is array. len 2",
-				"bicep array: [1, 2]",
-				"bicep array with quote: ['1', '2']",
+				"[1 2]",
 			},
 		},
 		{
@@ -70,6 +68,27 @@ func TestTemplateSplit(t *testing.T) {
 			want: []string{
 				"bicep array: [1, 2]",
 				"bicep array with quote: ['1', '2']",
+				"bicep array with sep: [AB, CD]",
+			},
+		},
+		{
+			name:  "split",
+			templ: "data/split.tmpl",
+			csv:   "data/split.csv",
+			out:   "data/split.out",
+			want: []string{
+				"[1 2] is array. len 2",
+				"bicep array: [1, 2]",
+				"bicep array with quote: ['1', '2']",
+				"bicep array func: ['1', '2']",
+			},
+		},
+		{
+			name:  "barray pipe",
+			templ: "data/barray-pipe.tmpl",
+			csv:   "data/barray.csv",
+			out:   "data/barray-pipe.out",
+			want: []string{
 				"bicep array with sep: [AB, CD]",
 			},
 		},
@@ -92,7 +111,7 @@ func TestTemplateSplit(t *testing.T) {
 			file.Close()
 
 			for _, e := range tt.want {
-				assert.Contains(t, s, e, "%q not contains %q", e, s)
+				assert.Contains(t, s, e)
 			}
 		})
 	}

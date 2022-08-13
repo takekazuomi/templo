@@ -1,0 +1,4 @@
+{{- range $i, $v := .env -}}
+bicep array with sep: {{ .f2 | barray '|' }}
+bicep array with sep: {{ barray .f2 '|' }}
+{{- end }}
