@@ -5,10 +5,8 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
-			// Update the VARIANT arg to pick a version of Go: 1, 1.15, 1.14
-			"VARIANT": "1.15",
-			// Options
-			"INSTALL_NODE": "true",
+			"VARIANT": "1.19",
+			"INSTALL_NODE": "false",
 			"NODE_VERSION": "lts/*"
 		}
 	},
@@ -16,12 +14,17 @@
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"terminal.integrated.shell.linux": "/bin/bash",
-		"go.useGoProxyToCheckForToolUpdates": false,
-		"go.useLanguageServer": true,
-		"go.gopath": "/go",
-		"go.goroot": "/usr/local/go",
-		"go.toolsGopath": "/go/bin"
+    "terminal.integrated.profiles.linux": {
+      "zsh (login)": {
+        "path": "zsh",
+        "args": ["-l"]
+      }
+    },
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    // https://github.com/golang/vscode-go/wiki/settings
+    "go": {
+      "useLanguageServer": true
+    }
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -31,7 +34,7 @@
 	"features": {
 		"docker-from-docker": "latest",
 		"git": "latest",
-		"git-lfs": "latest",
+//		"git-lfs": "latest",
 		"github-cli": "latest"
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
