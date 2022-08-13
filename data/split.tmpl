@@ -1,0 +1,10 @@
+{{- range $i, $v := .env }}
+line {{ $i }} f1 is {{ split $v.f1 " "}}, f2 is {{ $v.f2}}.
+{{- $s := split $v.f1 " " }}
+{{- if gt (len $s)  1 }}
+  {{ $s }} is array. len {{ len $s }}
+  bicep array: {{ $s | barray}}
+  bicep array with quote: {{ $s | barrayq}}
+{{- end }}
+{{- end }}
+
