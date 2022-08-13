@@ -2,63 +2,98 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"log"
 	"os"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
-
-func dummyMap(data map[string]string) {
-	fmt.Println(data)
-}
-
-func dummy(header []string, records []string) {
-	fmt.Println(header)
-	fmt.Println(records)
-}
 
 func TestCSVSuccess(t *testing.T) {
 	r := importCsv("data/sample.csv")
 	for i, v := range r {
-		if i == 0 && v["f1"] != "1" {
-			t.Errorf("line: %v, result f1: %v", i, v["f1"])
-		}
-		if i == 1 && v["f1"] != "2" {
-			t.Errorf("line: %v, result f1: %v", i, v["f1"])
-		}
+		assert.False(t, i == 0 && v["f1"] != "1", "line: %v, result f1: %v", i, v["f1"])
+		assert.False(t, i == 1 && v["f1"] != "2", "line: %v, result f1: %v", i, v["f1"])
 	}
 }
 
-func TestTemplateEvaulateSuccess(t *testing.T) {
+func TestTemplateEvaluateSuccess(t *testing.T) {
 	r := importCsv("data/sample.csv")
 	var out bytes.Buffer
-	templateEvaulate(&out, "data/loop-sample.tmpl", r)
+	templateEvaluate(&out, "data/loop-sample.tmpl", r)
 	s := out.String()
-	if !strings.Contains(s, "0: f1 1, f2: apple, f3: orange, f4: 14") {
-		t.Errorf("erroe unexpeded result %v", s)
-	}
+
+	assert.Contains(t, s, "0: f1 1, f2: apple, f3: orange, f4: 14", "error unexpected result %v", s)
 }
 
-func TestTemplateEvaulateFwRuleSuccess(t *testing.T) {
+func TestTemplateEvaluateFwRuleSuccess(t *testing.T) {
 	r := importCsv("data/fwrules.csv")
 	var out bytes.Buffer
-	templateEvaulate(&out, "data/fwrules.bicep.tmpl", r)
+	templateEvaluate(&out, "data/fwrules.bicep.tmpl", r)
 	s := out.String()
 
-	file, err := os.Create("data/fwfutes.bicep")
-	if err != nil {
-		log.Fatal(err)
-	}
+	file, err := os.Create("data/fwrules.bicep")
+	assert.NoError(t, err)
 	defer file.Close()
+
 	file.WriteString(s)
 	file.Close()
 
-	if !(strings.Contains(s, "/apple") &&
-		strings.Contains(s, "/orange") &&
-		strings.Contains(s, "192.168.12.2/32")) {
+	assert.Contains(t, s, "/apple", "error unexpected result %v", s)
+	assert.Contains(t, s, "/orange", "error unexpected result %v", s)
+	assert.Contains(t, s, "192.168.12.2/32", "error unexpected result %v", s)
+}
 
-		t.Errorf("error unexpeded result %v", s)
+func TestTemplateSplit(t *testing.T) {
+	tests := []struct {
+		name  string
+		templ string
+		csv   string
+		out   string
+		want  []string
+	}{
+		{
+			name:  "split",
+			templ: "data/split.tmpl",
+			csv:   "data/split.csv",
+			out:   "data/split.out",
+			want: []string{
+				"[1 2] is array. len 2",
+				"bicep array: [1, 2]",
+				"bicep array with quote: ['1', '2']",
+			},
+		},
+		{
+			name:  "barray",
+			templ: "data/barray.tmpl",
+			csv:   "data/barray.csv",
+			out:   "data/barray.out",
+			want: []string{
+				"bicep array: [1, 2]",
+				"bicep array with quote: ['1', '2']",
+				"bicep array with sep: [AB, CD]",
+			},
+		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 
+			r := importCsv(tt.csv)
+			var out bytes.Buffer
+			templateEvaluate(&out, tt.templ, r)
+			s := out.String()
+
+			file, err := os.Create(tt.out)
+			if err != nil {
+				t.Error(err)
+			}
+			defer file.Close()
+
+			file.WriteString(s)
+			file.Close()
+
+			for _, e := range tt.want {
+				assert.Contains(t, s, e, "%q not contains %q", e, s)
+			}
+		})
+	}
 }

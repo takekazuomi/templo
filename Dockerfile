@@ -1,9 +1,11 @@
-FROM golang:1.15 AS builder
-WORKDIR /tmp
-RUN go get -v github.com/takekazuomi/templo
+FROM golang:1.19 AS builder
+
+WORKDIR /app
+COPY . .
+RUN go mod download && go build ./templo.go
 
 FROM alpine:latest
 WORKDIR /app/
-COPY --from=builder /go/bin/templo /go/bin/templo
+COPY --from=builder /app/templo /go/bin/templo
 
 ENTRYPOINT ["/go/bin/templo"]

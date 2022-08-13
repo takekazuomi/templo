@@ -1,0 +1,5 @@
+{{- range $i, $v := .env -}}
+bicep array: {{ .f1 | barray}}
+bicep array with quote: {{ .f1 | barrayq}}
+bicep array with sep: {{ barray .f2 "|" }}
+{{- end }}
